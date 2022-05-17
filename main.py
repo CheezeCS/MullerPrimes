@@ -1,23 +1,25 @@
-def get_random_element_of_mult_group_kronecker(n):
+from typing import Tuple, Union, Optional
+
+
+def get_random_element_of_mult_group_kronecker(n: int) -> int:
     for i in range(2, n - 1):
         if gcd(i, n) == 1:
             if kronecker(i, n) == -1:
                 return i
 
 
-def get_pq(n, Ps, Qs):
+def get_pq(n: int) -> Tuple[int, int]:
     Q = 2
     while True:
         Q += 1
         P = randint(0, n - 1)
-        if gcd(Q, n) == 1:
-            if kronecker(Q, n) == 1:
-                D = (P ^ 2 - 4 * Q) % n
-                if kronecker(D, n) == -1:
-                    return P, Q
+        if gcd(Q, n) == 1 and kronecker(Q, n) == 1:
+            D = (P ^ 2 - 4 * Q) % n
+            if kronecker(D, n) == -1:
+                return P, Q
 
 
-def get_exp_of_number(n):
+def get_exp_of_number(n: int) -> Tuple[int, int]:
     n -= 1
     count = 0
     while True:
@@ -27,7 +29,7 @@ def get_exp_of_number(n):
         n = n >> 1
 
 
-def vs(m, P):
+def vs(m: int, P: int) -> Tuple[int, int]:
     d1 = P
     d2 = P ** 2 - 2
     bin_list = bin(m)[2:]
@@ -42,11 +44,10 @@ def vs(m, P):
     w2 = d1 ^ 2 - 2
     if bin_list[0] == '1':
         return w1, P * w1 - w2
-    else:
-        return w2, w1
+    return w2, w1
 
 
-def spr(Q, n, u):
+def spr(Q: int, n: int, u: int) -> Union[bool, Tuple[int, bool]]:
     r, s = get_exp_of_number(n)
     z = Integer(u).powermod(s, n)
     if not (z ^ (2 ^ (r - 1)) % n == -1 % n):
@@ -79,7 +80,7 @@ def spr(Q, n, u):
     return a % n, True
 
 
-def qf(n, P):
+def qf(n: int, P: int) -> Tuple[int, bool]:
     k = (n + 1) // 2 % n
     Vk, Vk1 = vs(k, P)
     if (2 * Vk1) % n == P * Vk % n:
@@ -94,7 +95,7 @@ def qf(n, P):
         return 0, True
 
 
-def spsp(n, a):
+def spsp(n: int, a: int) -> bool:
     s = (n - 1).valuation(2)  # n - 1 | 2 ** s; s - max
     t = (n - 1) // (2 ** s)
     if Integer(a).powermod(t, n) == 1:
@@ -105,7 +106,7 @@ def spsp(n, a):
     return False
 
 
-def spr_for_5_mod_8(n, Q, d):
+def spr_for_5_mod_8(n: int, Q: int, d: int) -> Tuple[int, bool]:
     Zn = Integers(n)
     if not spsp(n, 2 * d ** 2):
         return 0, False
@@ -117,7 +118,8 @@ def spr_for_5_mod_8(n, Q, d):
         return z * d * Q * (i - 1) % n, True
 
 
-def muller_test(n, iters=1):
+def muller_test(n: int, iters: int = 1) -> Optional[bool]:
+    u = 0
     if n % 4 == 1:
         return None
     B = 50000
@@ -130,7 +132,7 @@ def muller_test(n, iters=1):
     Ps, Qs = [], []
     d = get_random_element_of_mult_group_kronecker(n)
     for i in range(iters):
-        P, Q = get_pq(n, Ps, Qs)
+        P, Q = get_pq(n)
         Ps += [P]
         Qs += [Q]
         if n % 8 == 5:
@@ -147,3 +149,6 @@ def muller_test(n, iters=1):
         if not if_prp:
             return False
     return True
+
+
+print(muller_test(22))
